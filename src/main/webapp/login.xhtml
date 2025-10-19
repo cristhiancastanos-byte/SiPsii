@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+<h:head>
+    <title>SiPsi – Iniciar sesión</title>
+    <meta charset="UTF-8"/>
+
+    <style>
+        :root{
+            --bg:#bfaee8;
+            --card:#ffffff;
+            --accent:#6F00FC;
+            --accent-deep:#4e02b6;
+            --deep:#2b2140;
+            --ink:#2b2140;
+            --input-bg:#efeafc;
+            --input-bd:#e6e0f4;
+            --error:#a40000;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0; padding:0; background:var(--bg);
+            font-family:'TU-FUENTE-NOMBRE', Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color:var(--ink);
+        }
+
+        .stage{
+            min-height:100vh;
+            display:flex; align-items:center; justify-content:center;
+            padding:2vh;
+        }
+
+        .square{
+            width:min(1100px, 92vw);
+            height:clamp(540px, 70vh, 760px);
+            display:flex;
+            position:relative;
+            border-radius:28px;
+            overflow:hidden;
+            background:var(--card);
+            box-shadow:0 18px 40px rgba(0,0,0,.18);
+        }
+
+        .left{
+            position:relative;
+            height:100%;
+            aspect-ratio:1/1;
+            flex:0 0 auto;
+            background:linear-gradient(135deg,#8d6cd1, #6f57c8 60%, #5a4aa8);
+        }
+
+        .art{ position:absolute; inset:0; pointer-events:none; }
+
+        .logo-wrap{
+            position:absolute; inset:0;
+            display:flex; align-items:center; justify-content:center;
+            text-align:left; padding:4%;
+        }
+        .logo{ color:#fff; max-width:82%; }
+        .logo h1{
+            font-family:'TU-FUENTE-NOMBRE', inherit;
+            font-size:clamp(28px,4.6vw,54px);
+            font-weight:800; letter-spacing:.3px; margin:0 0 10px;
+            text-shadow:0 3px 0 rgba(0,0,0,.10);
+        }
+        .logo p{
+            font-family:'TU-FUENTE-NOMBRE', inherit;
+            font-size:clamp(13px,1.6vw,18px);
+            margin:0; opacity:.95;
+        }
+
+        .right{
+            flex:1;
+            display:flex; align-items:center; justify-content:center;
+            background:var(--card);
+            padding:0 25px;
+        }
+        .panel{ width:100%; max-width:420px; }
+        .title{
+            text-align:center; margin:0 0 22px;
+            font-family:'TU-FUENTE-NOMBRE', inherit;
+            color:var(--accent-deep);
+            font-weight:800; font-size:clamp(22px,2.8vw,34px);
+            text-shadow:0 4px 0 rgba(0,0,0,.06);
+        }
+
+        .field{ margin:0 0 14px; }
+        .input{
+            width:100%; padding:14px 44px 14px 42px;
+            border-radius:14px; border:1px solid var(--input-bd);
+            background:var(--input-bg);
+            outline:none; font-size:15px; color:var(--deep);
+            transition:border .2s, box-shadow .2s;
+        }
+        .input:focus{ border-color:#c6b7ff; box-shadow:0 0 0 4px rgba(111,0,252,.12) }
+
+        .input::placeholder{ color:rgba(107,107,107,.5); }
+
+        .icon-user{
+            background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22 viewBox=%220%200%2024%2024%22 fill=%22none%22 stroke=%22%23654874%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M20 21a8 8 0 0 0-16 0%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E");
+        }
+        .icon-lock{
+            background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2222%22 height=%2222%22 viewBox=%220%200%2024%2024%22 fill=%22none%22 stroke=%22%23654874%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22/%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22/%3E%3C/svg%3E");
+        }
+
+        .icon-user, .icon-lock{
+            background-repeat:no-repeat; background-position:12px center; background-size:22px;
+        }
+
+        .error-msg{ margin-top:6px; color:var(--error); font-weight:700; font-size:13px; }
+
+        .btn{
+            width:100%; padding:14px 18px; border-radius:20px; border:none; cursor:pointer;
+            background:var(--accent); color:#fff; font-weight:800; font-size:15px;
+            box-shadow:0 8px 0 var(--accent-deep); transition:transform .05s;
+            font-family:'TU-FUENTE-NOMBRE', inherit;
+        }
+        .btn:active{ transform:translateY(2px); box-shadow:0 6px 0 var(--accent-deep); }
+
+        .modal-back{
+            position:fixed; inset:0; background:rgba(0,0,0,.45);
+            display:flex; align-items:center; justify-content:center;
+        }
+        .modal{
+            width:min(92vw, 420px);
+            background:#fff; border-radius:16px; padding:20px;
+            box-shadow:0 20px 60px rgba(0,0,0,.25);
+            text-align:center;
+        }
+        .modal h3{
+            margin:6px 0 10px; color:var(--deep);
+            font-family:'TU-FUENTE-NOMBRE', inherit; font-weight:800;
+        }
+        .modal p{ margin:0 0 18px; color:#402a59 }
+        .modal .ok{ min-width:70px }
+
+        @media (max-width:960px){
+            .left{ display:none; }
+            .right{ flex:1; padding:0 18px; }
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="stage">
+        <div class="square">
+            <div class="left">
+                <svg class="art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"
+                     preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0" stop-color="#7c62d1" stop-opacity="0.9"/>
+                            <stop offset="1" stop-color="#5a4aa8" stop-opacity="0.9"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M15,70 C5,55 20,45 30,50 C40,55 38,75 25,78 C20,79 17,75 15,70 Z" fill="url(#g1)" opacity="0.85"/>
+                    <path d="M80,25 C90,30 92,45 82,48 C70,52 65,35 72,28 C74,26 77,24 80,25 Z" fill="#6b59c6" opacity="0.7"/>
+                    <path d="M20 22 a8 8 0 1 0 12 9 a6 6 0 1 1 -12 -9 Z" fill="#ffffff" opacity="0.95"/>
+                    <circle cx="28" cy="12" r="0.9" fill="#ffffff"/>
+                    <circle cx="32" cy="15" r="0.6" fill="#ffffff"/>
+                    <circle cx="24" cy="15" r="0.6" fill="#ffffff"/>
+                    <path d="M10,90 C25,70 45,75 60,60" fill="none" stroke="#d9d0ff" stroke-width="0.6" opacity="0.5"/>
+                    <path d="M60,85 C70,75 80,70 95,72" fill="none" stroke="#d9d0ff" stroke-width="0.6" opacity="0.45"/>
+                    <g fill="#e9e2ff" opacity="0.7">
+                        <circle cx="18" cy="40" r="0.6"/><circle cx="21" cy="40" r="0.6"/><circle cx="24" cy="40" r="0.6"/>
+                        <circle cx="18" cy="43" r="0.6"/><circle cx="21" cy="43" r="0.6"/><circle cx="24" cy="43" r="0.6"/>
+                        <circle cx="18" cy="46" r="0.6"/><circle cx="21" cy="46" r="0.6"/><circle cx="24" cy="46" r="0.6"/>
+                    </g>
+                    <path d="M85,10 C70,25 95,35 78,50" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="0.65"/>
+                </svg>
+
+                <div class="logo-wrap">
+                    <div class="logo">
+                        <h1>Bienvenido a SiPsi</h1>
+                        <p>Tu consulta psicológica, organizada y segura</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="panel">
+                    <div class="title">Iniciar sesión</div>
+                    <h:form id="loginForm">
+                        <div class="field">
+                            <h:inputText id="usuario" value="#{loginBean.usuario}" styleClass="input icon-user"
+                                         required="true" requiredMessage="Campo Obligatorio"
+                                         autocomplete="username" placeholder="Usuario"
+                                         pt:placeholder="Usuario"
+                                         pt:autocomplete="username"/>
+                            <h:message for="usuario" styleClass="error-msg"/>
+                        </div>
+
+                        <div class="field">
+                            <h:inputSecret id="password" value="#{loginBean.password}" styleClass="input icon-lock"
+                                           required="true" requiredMessage="Campo Obligatorio"
+                                           autocomplete="current-password" placeholder="Contraseña"
+                                           pt:placeholder="Contraseña"/>
+                            <h:message for="password" styleClass="error-msg"/>
+                        </div>
+
+                        <h:commandButton id="ingresar" value="Iniciar sesión" styleClass="btn"
+                                         actionListener="#{loginBean.login}"/>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h:panelGroup rendered="#{loginBean.mostrarError}" layout="block" styleClass="modal-back">
+        <div class="modal">
+            <h3>Usuario o contraseña incorrectos</h3>
+            <h:form>
+                <h:commandButton value="Aceptar" styleClass="btn ok" actionListener="#{loginBean.cerrarError}"/>
+            </h:form>
+        </div>
+    </h:panelGroup>
+</h:body>
+</html>
