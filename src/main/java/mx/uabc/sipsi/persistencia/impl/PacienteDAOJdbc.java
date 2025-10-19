@@ -6,51 +6,42 @@ import mx.uabc.sipsi.persistencia.MySQLRepo;
 import mx.uabc.sipsi.persistencia.PacienteDAO;
 
 import java.sql.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 @MySQLRepo
 public class PacienteDAOJdbc implements PacienteDAO {
 
-    private static final String URL  =
-            "jdbc:mysql://localhost:3306/sipsi?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+    private static final String URL = "jdbc:mysql://localhost:3306/sipsi?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
     private static final String PASS = "root";
 
-    static {
-        try { Class.forName("com.mysql.cj.jdbc.Driver"); }
-        catch (ClassNotFoundException e) { throw new RuntimeException("Falta mysql-connector-j", e); }
-    }
-
     @Override
     public List<Paciente> listar(String termino) {
-        String base = "SELECT id, nombre_completo, edad, genero, correo " +
-                "FROM paciente WHERE activo=1";
-        List<String> filtros = new ArrayList<>();
-        List<Object> params  = new ArrayList<>();
-
-        if (termino != null && !termino.trim().isEmpty()) {
-            filtros.add("(LOWER(nombre_completo) LIKE ? OR LPAD(id,3,'0') LIKE ?)");
-            String t = "%" + termino.trim().toLowerCase(Locale.ROOT) + "%";
-            params.add(t);
-            params.add("%" + termino.trim() + "%");
-        }
-
-        String where = filtros.isEmpty() ? "" : (" AND " + filtros.stream().collect(Collectors.joining(" AND ")));
-        String sql = base + where + " ORDER BY id ASC";
-
         List<Paciente> out = new ArrayList<>();
-        try (Connection con = DriverManager.getConnection(URL, USER, PASS);
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            for (int i = 0; i < params.size(); i++) ps.setObject(i + 1, params.get(i));
+        String base = "SELECT id, nombre_completo, edad, genero, correo FROM paciente WHERE activo = 1";
+        String sql = (termino == null || termino.isBlank())
+                ? base + " ORDER BY id DESC"
+                : base + " AND (LOWER(nombre_completo) LIKE ? OR LOWER(correo) LIKE ?) ORDER BY id DESC";
+
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            if (termino != null && !termino.isBlank()) {
+                String t = "%" + termino.toLowerCase().trim() + "%";
+                ps.setString(1, t);
+                ps.setString(2, t);
+            }
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Paciente p = new Paciente();
                     p.setId(rs.getLong("id"));
                     p.setNombreCompleto(rs.getString("nombre_completo"));
                     p.setEdad(rs.getInt("edad"));
-                    p.setGenero(rs.getString("genero"));
+                    String gen = rs.getString("genero");
+                    p.setGenero((gen != null && !gen.isEmpty()) ? gen.charAt(0) : null);
                     p.setCorreo(rs.getString("correo"));
                     out.add(p);
                 }
@@ -59,5 +50,54 @@ public class PacienteDAOJdbc implements PacienteDAO {
             throw new RuntimeException("Error listando pacientes", e);
         }
         return out;
+    }
+
+    @Override
+    public boolean existePorNombreYEdad(String nombreCompleto, int edad) throws Exception {
+        String sql = "SELECT 1 FROM paciente WHERE nombre_completo = ? AND edad = ? LIMIT 1";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, nombreCompleto);
+            ps.setInt(2, edad);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    @Override
+    public boolean existeCorreo(String correo) throws Exception {
+        if (correo == null || correo.isBlank()) return false;
+        String sql = "SELECT 1 FROM paciente WHERE correo = ? LIMIT 1";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, correo);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    @Override
+    public long insertar(Paciente p) throws Exception {
+        String sql = "INSERT INTO paciente (nombre_completo, edad, genero, correo, activo) VALUES (?,?,?,?,1)";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setString(1, p.getNombreCompleto());
+            ps.setInt(2, p.getEdad());
+            ps.setString(3, (p.getGenero() == null) ? null : String.valueOf(p.getGenero()));
+
+            if (p.getCorreo() == null || p.getCorreo().isBlank()) {
+                ps.setNull(4, Types.VARCHAR);
+            } else {
+                ps.setString(4, p.getCorreo());
+            }
+
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                return rs.next() ? rs.getLong(1) : 0L;
+            }
+        }
     }
 }

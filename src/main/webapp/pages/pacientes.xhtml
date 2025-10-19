@@ -3,6 +3,7 @@
       xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
       lang="es">
 
 <h:head>
@@ -17,9 +18,7 @@
         --texto: #1a1a1a;
         }
 
-        * {
-        box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
         margin: 0;
@@ -36,278 +35,139 @@
         border-bottom: 1px solid #ddd;
         }
 
-        .topbar__left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 220px;
-        }
+        .topbar__left { display: flex; align-items: center; gap: 12px; min-width: 220px; }
+        .topbar__center { flex: 1; display: flex; justify-content: center; }
+        .topbar__right { min-width: 220px; display: flex; justify-content: flex-end; }
 
-        .topbar__center {
-        flex: 1;
-        display: flex;
-        justify-content: center;
-        }
+        .logo { height: 42px; width: auto; border-radius: 14px; background: #fff; padding: 6px 10px; }
 
-        .topbar__right {
-        min-width: 220px;
-        display: flex;
-        justify-content: flex-end;
-        }
+        .btn { border: 0; padding: 10px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .btn--primary { background: var(--morado); color: #fff; box-shadow: 0 4px 14px rgba(111, 0, 252, .35); }
+        .btn--logout { background: #b51d1d; color: #fff; box-shadow: 0 4px 14px rgba(181, 29, 29, .35); }
 
-        .logo {
-        height: 42px;
-        width: auto;
-        border-radius: 14px;
-        background: #fff;
-        padding: 6px 10px;
-        }
-
-        .btn {
-        border: 0;
-        padding: 10px 16px;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        }
-
-        .btn--primary {
-        background: var(--morado);
-        color: #fff;
-        box-shadow: 0 4px 14px rgba(111, 0, 252, .35);
-        }
-
-        .btn--logout {
-        background: #b51d1d;
-        color: #fff;
-        box-shadow: 0 4px 14px rgba(181, 29, 29, .35);
-        }
-
-        .nav-actions {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        }
+        .nav-actions { display: flex; gap: 10px; align-items: center; }
 
         .panel {
-        max-width: 1100px;
-        margin: 26px auto;
-        padding: 26px;
-        background: #F1ECFE;
-        border-radius: 18px;
-        box-shadow: 0 12px 26px rgba(0, 0, 0, .08);
+        max-width: 1100px; margin: 26px auto; padding: 26px; background: #F1ECFE;
+        border-radius: 18px; box-shadow: 0 12px 26px rgba(0, 0, 0, .08);
         }
 
-        .head-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        }
-
-        .head-row .title {
-        font-size: 28px;
-        font-weight: 800;
-        flex: 1;
-        }
+        .head-row { display: flex; align-items: center; gap: 14px; }
+        .head-row .title { font-size: 28px; font-weight: 800; flex: 1; }
 
         .search {
-        display: flex;
-        gap: .5rem;
-        align-items: center;
-        background: #fff;
-        border-radius: 999px;
-        padding: .55rem 1rem;
-        box-shadow: 0 12px 28px rgba(111, 0, 252, .20);
-        min-width: 320px;
-        max-width: 420px;
+        display: flex; gap: .5rem; align-items: center; background: #fff; border-radius: 999px;
+        padding: .55rem 1rem; box-shadow: 0 12px 28px rgba(111, 0, 252, .20);
+        min-width: 320px; max-width: 420px;
         }
 
-        .search input {
-        border: none;
-        outline: none;
-        width: 100%;
-        font-size: 14px;
-        }
+        .search input { border: none; outline: none; width: 100%; font-size: 14px; }
 
         .search .btn-find {
-        background: var(--morado);
-        color: #fff;
-        border: none;
-        border-radius: .9rem;
-        padding: .55rem 1.2rem;
-        font-weight: 700;
-        cursor: pointer;
+        background: var(--morado); color: #fff; border: none; border-radius: .9rem;
+        padding: .55rem 1.2rem; font-weight: 700; cursor: pointer;
         }
 
-        .empty-wrap {
-        display: flex;
-        justify-content: center;
-        margin-top: 18px;
-        }
+        .empty-wrap { display: flex; justify-content: center; margin-top: 18px; }
 
         .empty-card {
-        width: min(760px, 100%);
-        background: #fff;
-        color: #444;
-        border-radius: 16px;
-        padding: 18px 20px;
-        box-shadow: 0 12px 24px rgba(0, 0, 0, .10);
+        width: min(760px, 100%); background: #fff; color: #444; border-radius: 16px;
+        padding: 18px 20px; box-shadow: 0 12px 24px rgba(0, 0, 0, .10);
         }
 
         .grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 18px;
-        margin-top: 18px;
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 18px; margin-top: 18px;
         }
 
         .card {
-        background: #fff;
-        border-radius: 16px;
-        box-shadow: 0 12px 22px rgba(0, 0, 0, .12);
-        padding: 18px;
+        background: #fff; border-radius: 16px; box-shadow: 0 12px 22px rgba(0, 0, 0, .12); padding: 18px;
         }
 
         .card .accent {
-        height: 8px;
-        background: linear-gradient(90deg, var(--degrad1), var(--degrad2));
-        border-radius: 8px;
-        margin-bottom: 10px;
-        width: 42%;
+        height: 8px; background: linear-gradient(90deg, var(--degrad1), var(--degrad2));
+        border-radius: 8px; margin-bottom: 10px; width: 42%;
         }
 
-        .card h3 {
-        margin: 6px 0 8px;
-        font-size: 18px;
-        }
-
-        .meta {
-        color: #333;
-        font-size: 14px;
-        line-height: 1.45;
-        }
-
-        .actions {
-        display: flex;
-        gap: .5rem;
-        flex-wrap: wrap;
-        margin-top: 12px;
-        }
+        .card h3 { margin: 6px 0 8px; font-size: 18px; }
+        .meta { color: #333; font-size: 14px; line-height: 1.45; }
+        .actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 12px; }
 
         .btn-outline {
-        padding: .45rem .8rem;
-        border-radius: .6rem;
-        border: 1px solid rgba(111, 0, 252, .35);
-        background: #fff;
-        color: var(--morado);
-        cursor: pointer;
+        padding: .45rem .8rem; border-radius: .6rem; border: 1px solid rgba(111, 0, 252, .35);
+        background: #fff; color: var(--morado); cursor: pointer;
         }
 
         .backdrop-detail {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, .45);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        z-index: 900;
+        position: fixed; inset: 0; background: rgba(0, 0, 0, .45);
+        display: flex; align-items: center; justify-content: center;
+        padding: 16px; z-index: 900;
         }
 
         .modal-detail {
-        background: #fff;
-        border-radius: 14px;
-        width: 100%;
-        max-width: 560px;
+        background: #fff; border-radius: 14px; width: 100%; max-width: 560px;
         box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
         }
 
         .modal-detail header {
-        padding: 14px 16px;
-        border-bottom: 1px solid #eee;
-        font-size: 20px;
-        font-weight: 700;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        padding: 14px 16px; border-bottom: 1px solid #eee; font-size: 20px; font-weight: 700;
+        display: flex; justify-content: space-between; align-items: center;
         }
 
-        .modal-detail .content {
-        padding: 16px 18px;
-        font-size: 15px;
-        color: #222;
-        }
+        .modal-detail .content { padding: 16px 18px; font-size: 15px; color: #222; }
+        .modal-detail .footer { padding: 14px 16px; display: flex; justify-content: flex-end; gap: .5rem; }
+        .link-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #444; }
 
-        .modal-detail .footer {
-        padding: 14px 16px;
-        display: flex;
-        justify-content: flex-end;
-        gap: .5rem;
-        }
-
-        .link-close {
-        background: none;
-        border: none;
-        font-size: 22px;
-        cursor: pointer;
-        color: #444;
-        }
-
-        .btn-primary {
-        background: var(--morado);
-        color: #fff;
-        border: none;
-        border-radius: .6rem;
-        padding: .45rem .8rem;
-        cursor: pointer;
-        }
+        .btn-primary { background: var(--morado); color: #fff; border: none; border-radius: .6rem; padding: .45rem .8rem; cursor: pointer; }
 
         .modal-backdrop {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, .35);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 16px;
-        z-index: 1000;
+        position: fixed; inset: 0; background: rgba(0, 0, 0, .35); display: none;
+        align-items: center; justify-content: center; padding: 16px; z-index: 1000;
         }
 
-        .modal {
-        background: #fff;
-        border-radius: 14px;
-        padding: 20px;
-        width: 100%;
-        max-width: 520px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
-        }
-
-        .modal h3 {
-        margin: 0 0 12px;
-        font-size: 22px;
-        }
-
-        .modal .actions {
-        margin-top: 20px;
-        display: flex;
-        gap: 12px;
-        justify-content: flex-end;
-        }
+        .modal { background: #fff; border-radius: 14px; padding: 20px; width: 100%; max-width: 520px; box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+        .modal h3 { margin: 0 0 12px; font-size: 22px; }
+        .modal .actions { margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end; }
 
         @media (max-width: 820px) {
-        .head-row {
-        flex-direction: column;
-        align-items: flex-start;
+        .head-row { flex-direction: column; align-items: flex-start; }
+        .search { width: 100%; max-width: none; }
+        .empty-wrap { justify-content: flex-start; }
         }
 
-        .search {
-        width: 100%;
-        max-width: none;
+        .np-fab {
+        position: fixed; right: 32px; bottom: 32px; z-index: 1030;
+        width: 68px; height: 68px; border-radius: 50%;
+        background: var(--morado); color:#fff; font-size:38px; line-height:68px;
+        display:flex; align-items:center; justify-content:center; cursor:pointer;
+        box-shadow: 0 10px 25px rgba(0,0,0,.25);
         }
 
-        .empty-wrap {
-        justify-content: flex-start;
+        .np-fab:hover { transform: translateY(-2px); }
+
+        .np-overlay{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:1040; display:flex; align-items:center; justify-content:center; padding:16px;}
+        .np-card{width:min(760px,92vw); background:#fff; border-radius:16px; box-shadow:0 20px 40px rgba(0,0,0,.35); overflow:hidden;}
+        .np-header{padding:22px 28px; font-size:28px; font-weight:700; text-align:center;}
+        .np-body{padding:10px 28px 22px;}
+        .np-field{margin-bottom:16px;}
+        .np-label{font-weight:700; margin-bottom:6px; display:block; font-size:18px;}
+        .np-input, .np-select{
+        width:100%; padding:14px 14px; border-radius:10px; border:1px solid #ddd; outline:none; font-size:16px;
         }
+
+        .np-input:focus, .np-select:focus{border-color: var(--morado); box-shadow:0 0 0 3px rgba(111,0,252,.15);}
+        .np-hint-req{color:#c0392b; font-size:12px; margin-top:6px;}
+        .np-hint-opt{color:#777; font-size:12px; margin-top:6px;}
+        .np-footer{display:flex; gap:12px; justify-content:flex-end; padding:0 28px 24px;}
+        .btn-white{background:#fff; border:1px solid #e5e5e5;}
+
+        .np-alert{position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:1050; padding:16px;}
+        .np-alert-card{background:#fff; width:min(560px,90vw); border-radius:12px; box-shadow:0 18px 36px rgba(0,0,0,.35); padding:20px;}
+        .np-alert-msg{font-size:18px; text-align:center; margin: 10px 0 18px;}
+        .np-alert-actions{display:flex; justify-content:center;}
+
+        .np-fab, .np-fab:link, .np-fab:visited, .np-fab:hover, .np-fab:focus, .np-fab:active {
+        text-decoration: none; outline: none; box-shadow: 0 10px 25px rgba(0,0,0,.25);
         }
     </h:outputStylesheet>
 
@@ -315,7 +175,6 @@
         function openLogoutModal() {
         document.getElementById('logoutBackdrop').style.display = 'flex';
         }
-
         function closeLogoutModal() {
         document.getElementById('logoutBackdrop').style.display = 'none';
         }
@@ -365,11 +224,6 @@
                             </div>
                             <div class="actions">
                                 <h:commandButton value="Ver detalles" action="#{pacientesBean.abrirDetalles(p)}" styleClass="btn-outline" />
-                                <span style="visibility:hidden" aria-hidden="true">
-                                    <button class="btn-outline">Eliminar</button>
-                                    <button class="btn-outline">Editar</button>
-                                    <button class="btn-outline">Ver citas</button>
-                                </span>
                             </div>
                         </div>
                     </ui:repeat>
@@ -400,6 +254,90 @@
             </ui:fragment>
         </h:form>
     </div>
+
+    <h:form prependId="false">
+        <h:commandLink styleClass="np-fab" action="#{pacientesBean.abrirNuevoPaciente}">
+            <span>+</span>
+        </h:commandLink>
+    </h:form>
+
+    <h:panelGroup rendered="#{pacientesBean.mostrarNuevoPaciente}">
+        <div class="np-overlay" role="dialog" aria-modal="true">
+            <div class="np-card">
+                <div class="np-header">Nuevo Paciente</div>
+
+                <h:form id="frmNuevoPaciente" prependId="false">
+                    <div class="np-body">
+                        <div class="np-field">
+                            <span class="np-label">Nombre Completo:</span>
+                            <h:inputText value="#{pacientesBean.nombreCompleto}" styleClass="np-input">
+                                <f:ajax event="keyup" listener="#{pacientesBean.onNombreChange}" render="hintNombre" />
+                            </h:inputText>
+                            <h:panelGroup id="hintNombre" rendered="#{pacientesBean.errNombre}">
+                                <div class="np-hint-req">Campo Obligatorio</div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="np-field">
+                            <span class="np-label">Edad:</span>
+                            <h:inputText value="#{pacientesBean.edad}" styleClass="np-input" p:placeholder="0-120">
+                                <f:convertNumber integerOnly="true" />
+                                <f:ajax event="keyup" listener="#{pacientesBean.onEdadChange}" render="hintEdad" />
+                            </h:inputText>
+                            <h:panelGroup id="hintEdad" rendered="#{pacientesBean.errEdad}">
+                                <div class="np-hint-req">Campo Obligatorio</div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="np-field">
+                            <span class="np-label">Género:</span>
+                            <h:selectOneMenu value="#{pacientesBean.genero}" styleClass="np-select">
+                                <f:selectItem itemValue="" itemLabel="Selecciona un género" noSelectionOption="true" />
+                                <f:selectItem itemValue="H" itemLabel="Hombre" />
+                                <f:selectItem itemValue="M" itemLabel="Mujer" />
+                                <f:selectItem itemValue="O" itemLabel="No mostrar" />
+                                <f:ajax event="change" listener="#{pacientesBean.onGeneroChange}" render="hintGenero" />
+                            </h:selectOneMenu>
+                            <h:panelGroup id="hintGenero" rendered="#{pacientesBean.errGenero}">
+                                <div class="np-hint-req">Campo Obligatorio</div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="np-field">
+                            <span class="np-label">Correo:</span>
+                            <h:inputText value="#{pacientesBean.correo}" styleClass="np-input" p:placeholder="Ejemplo@sitio.com" />
+                            <div class="np-hint-opt">Campo Opcional</div>
+                        </div>
+                    </div>
+
+                    <div class="np-footer">
+                        <h:commandButton value="Cancelar" styleClass="btn btn-white" action="#{pacientesBean.cancelarNuevoPaciente}" />
+                        <h:commandButton value="Guardar" styleClass="btn btn-primary"
+                                         action="#{pacientesBean.guardarNuevoPaciente}">
+                            <f:ajax execute="@form" render="@form :popAlert" />
+                        </h:commandButton>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </h:panelGroup>
+
+    <h:panelGroup id="popAlert">
+        <h:panelGroup rendered="#{pacientesBean.mostrarAlerta}">
+            <div class="np-alert">
+                <div class="np-alert-card">
+                    <div class="np-alert-msg">#{pacientesBean.mensajeAlerta}</div>
+                    <div class="np-alert-actions">
+                        <h:form>
+                            <h:commandButton value="Aceptar" styleClass="btn btn-white" action="#{pacientesBean.cerrarPop}">
+                                <f:ajax render=":popAlert :frmNuevoPaciente" />
+                            </h:commandButton>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </h:panelGroup>
+    </h:panelGroup>
 
     <div id="logoutBackdrop" class="modal-backdrop">
         <div class="modal">
