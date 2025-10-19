@@ -224,6 +224,8 @@
                             </div>
                             <div class="actions">
                                 <h:commandButton value="Ver detalles" action="#{pacientesBean.abrirDetalles(p)}" styleClass="btn-outline" />
+                                <!-- NUEVO: botón Editar (no se eliminó nada, solo se agregó) -->
+                                <h:commandButton value="Editar" action="#{pacientesBean.abrirEditarPaciente(p)}" styleClass="btn-outline" />
                             </div>
                         </div>
                     </ui:repeat>
@@ -322,6 +324,67 @@
         </div>
     </h:panelGroup>
 
+    <h:panelGroup rendered="#{pacientesBean.mostrarEditarPaciente}">
+        <div class="np-overlay" role="dialog" aria-modal="true">
+            <div class="np-card">
+                <div class="np-header">Editar Paciente</div>
+
+                <h:form id="frmEditarPaciente" prependId="false">
+                    <div class="np-body">
+                        <div class="np-field">
+                            <span class="np-label">Nombre Completo:</span>
+                            <h:inputText value="#{pacientesBean.nombreCompleto}" styleClass="np-input">
+                                <f:ajax event="keyup" listener="#{pacientesBean.onNombreChange}" render="hintNombreE" />
+                            </h:inputText>
+                            <h:panelGroup id="hintNombreE" rendered="#{pacientesBean.errNombre}">
+                                <div class="np-hint-req">Campo Obligatorio</div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="np-field">
+                            <span class="np-label">Edad:</span>
+                            <h:inputText value="#{pacientesBean.edad}" styleClass="np-input" p:placeholder="0-120">
+                                <f:convertNumber integerOnly="true" />
+                                <f:ajax event="keyup" listener="#{pacientesBean.onEdadChange}" render="hintEdadE" />
+                            </h:inputText>
+                            <h:panelGroup id="hintEdadE" rendered="#{pacientesBean.errEdad}">
+                                <div class="np-hint-req">Campo Obligatorio</div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="np-field">
+                            <span class="np-label">Género:</span>
+                            <h:selectOneMenu value="#{pacientesBean.genero}" styleClass="np-select">
+                                <f:selectItem itemValue="" itemLabel="Selecciona un género" noSelectionOption="true" />
+                                <f:selectItem itemValue="H" itemLabel="Hombre" />
+                                <f:selectItem itemValue="M" itemLabel="Mujer" />
+                                <f:selectItem itemValue="O" itemLabel="No mostrar" />
+                                <f:ajax event="change" listener="#{pacientesBean.onGeneroChange}" render="hintGeneroE" />
+                            </h:selectOneMenu>
+                            <h:panelGroup id="hintGeneroE" rendered="#{pacientesBean.errGenero}">
+                                <div class="np-hint-req">Campo Obligatorio</div>
+                            </h:panelGroup>
+                        </div>
+
+                        <div class="np-field">
+                            <span class="np-label">Correo:</span>
+                            <h:inputText value="#{pacientesBean.correo}" styleClass="np-input" p:placeholder="Ejemplo@sitio.com" />
+                            <div class="np-hint-opt">Campo Opcional</div>
+                        </div>
+                    </div>
+
+                    <div class="np-footer">
+                        <h:commandButton value="Cancelar" styleClass="btn btn-white" action="#{pacientesBean.cancelarEditarPaciente}" />
+                        <h:commandButton value="Guardar Cambios" styleClass="btn btn-primary"
+                                         action="#{pacientesBean.guardarCambiosPaciente}">
+                            <f:ajax execute="@form" render="@form :popAlert" />
+                        </h:commandButton>
+                    </div>
+                </h:form>
+            </div>
+        </div>
+    </h:panelGroup>
+
     <h:panelGroup id="popAlert">
         <h:panelGroup rendered="#{pacientesBean.mostrarAlerta}">
             <div class="np-alert">
@@ -330,7 +393,8 @@
                     <div class="np-alert-actions">
                         <h:form>
                             <h:commandButton value="Aceptar" styleClass="btn btn-white" action="#{pacientesBean.cerrarPop}">
-                                <f:ajax render=":popAlert :frmNuevoPaciente" />
+                                <!-- NUEVO: agregué :frmEditarPaciente, dejé intacto lo tuyo -->
+                                <f:ajax render=":popAlert :frmNuevoPaciente :frmEditarPaciente" />
                             </h:commandButton>
                         </h:form>
                     </div>
