@@ -23,7 +23,7 @@
         html,body{height:100%}
         body{
             margin:0; padding:0; background:var(--bg);
-            font-family:'TU-FUENTE-NOMBRE', Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
             color:var(--ink);
         }
 
@@ -61,13 +61,11 @@
         }
         .logo{ color:#fff; max-width:82%; }
         .logo h1{
-            font-family:'TU-FUENTE-NOMBRE', inherit;
             font-size:clamp(28px,4.6vw,54px);
             font-weight:800; letter-spacing:.3px; margin:0 0 10px;
             text-shadow:0 3px 0 rgba(0,0,0,.10);
         }
         .logo p{
-            font-family:'TU-FUENTE-NOMBRE', inherit;
             font-size:clamp(13px,1.6vw,18px);
             margin:0; opacity:.95;
         }
@@ -81,7 +79,6 @@
         .panel{ width:100%; max-width:420px; }
         .title{
             text-align:center; margin:0 0 22px;
-            font-family:'TU-FUENTE-NOMBRE', inherit;
             color:var(--accent-deep);
             font-weight:800; font-size:clamp(22px,2.8vw,34px);
             text-shadow:0 4px 0 rgba(0,0,0,.06);
@@ -116,7 +113,6 @@
             width:100%; padding:14px 18px; border-radius:20px; border:none; cursor:pointer;
             background:var(--accent); color:#fff; font-weight:800; font-size:15px;
             box-shadow:0 8px 0 var(--accent-deep); transition:transform .05s;
-            font-family:'TU-FUENTE-NOMBRE', inherit;
         }
         .btn:active{ transform:translateY(2px); box-shadow:0 6px 0 var(--accent-deep); }
 
@@ -132,7 +128,7 @@
         }
         .modal h3{
             margin:6px 0 10px; color:var(--deep);
-            font-family:'TU-FUENTE-NOMBRE', inherit; font-weight:800;
+            font-weight:800;
         }
         .modal p{ margin:0 0 18px; color:#402a59 }
         .modal .ok{ min-width:70px }
@@ -202,7 +198,7 @@
                         </div>
 
                         <h:commandButton id="ingresar" value="Iniciar sesión" styleClass="btn"
-                                         actionListener="#{loginBean.login}"/>
+                                         action="#{loginBean.login}"/>
                     </h:form>
                 </div>
             </div>
@@ -217,5 +213,36 @@
             </h:form>
         </div>
     </h:panelGroup>
+    <!-- estilos mínimos del modal de mensaje -->
+
+
+    <!-- Se muestran cuando se llama la redirección a aquí con código -->
+    <!-- “Sesión expirada…” (viene del filtro con ?expired=1) -->
+    <h:panelGroup rendered="#{param['expired'] eq '1'}">
+        <div class="msg-backdrop">
+            <div class="msg">
+                <h3>Sesión expirada</h3>
+                <p>Por favor inicia sesión nuevamente.</p>
+                <button class="ok" onclick="this.closest('.msg-backdrop').remove()">Aceptar</button>
+            </div>
+        </div>
+    </h:panelGroup>
+
+    <!-- “Sesión cerrada correctamente” (viene del flash del logout) -->
+    <h:panelGroup rendered="#{not empty flash['logoutOk']}">
+        <div class="msg-backdrop">
+            <div class="msg">
+                <h3>Sesión cerrada correctamente</h3>
+                <button class="ok" onclick="this.closest('.msg-backdrop').remove()">Aceptar</button>
+            </div>
+        </div>
+    </h:panelGroup>
+
+    <h:outputStylesheet>
+        .msg-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center}
+        .msg{background:#fff; border-radius:14px; padding:20px; width:100%; max-width:540px; box-shadow:0 10px 30px rgba(0,0,0,.25); text-align:center}
+        .msg h3{margin:0 0 8px}
+        .msg .ok{margin-top:16px; background:var(--morado,#6F00FC); color:#fff; border:0; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer}
+    </h:outputStylesheet>
 </h:body>
 </html>

@@ -1,55 +1,41 @@
 package mx.uabc.sipsi.vista;
 
-import jakarta.inject.Named;
-import jakarta.faces.view.ViewScoped;
-import jakarta.faces.application.FacesMessage;
-import jakarta.faces.context.FacesContext;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import java.io.IOException;
-import java.io.Serializable;
+import jakarta.inject.Named;
+import jakarta.faces.context.FacesContext;
 import mx.uabc.sipsi.negocio.AuthServicio;
-import mx.uabc.sipsi.seguridad.SesionBean;
 
 @Named
-@ViewScoped
-public class LoginBean implements Serializable {
+@RequestScoped  // Vive solo durante las peticiones donde se usa
+public class LoginBean {
+    @Inject AuthServicio authServicio;
 
     private String usuario;
     private String password;
-    private boolean cargando;
-
     private boolean mostrarError;
 
-    @Inject
-    AuthServicio authServicio;
-
-    @Inject
-    SesionBean sesion;
-
-    public void login() throws IOException {
-        cargando = true;
-        try {
-            var res = authServicio.iniciarSesion(usuario, password);
-            if (!res.isOk()) {
-                mostrarError = true;
-                return;
-            }
-            sesion.setUsuarioActual(res.getUsuario());
-            var ec = jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext();
-            ec.redirect(ec.getRequestContextPath() + "/pages/home.xhtml?faces-redirect=true");
-        } finally {
-            cargando = false;
+    public String login() {
+        var res = authServicio.autenticar(usuario, password);
+        if (res.exito()) {
+            var ec  = FacesContext.getCurrentInstance().getExternalContext();
+            var ses = (jakarta.servlet.http.HttpSession) ec.getSession(true); // crea si no existe
+            ses.setAttribute("usuario", res.usuario());                       // **misma llave**
+            System.out.println("[LOGIN] OK -> sessionId=" + ses.getId());
+            return "/pages/principal.xhtml?faces-redirect=true";
+        } else {
+            mostrarError = true;
+            System.out.println("[LOGIN] ERROR -> " + res.mensaje());
+            return null; // permanecer en login.xhtml
         }
     }
 
-    public void cerrarError() {
-        mostrarError = false;
-    }
+    public void cerrarError(){ mostrarError = false; }
 
-    public String getUsuario() { return usuario; }
-    public void setUsuario(String usuario) { this.usuario = usuario; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public boolean isCargando() { return cargando; }
-    public boolean isMostrarError() { return mostrarError; }
+    // getters/setters
+    public String getUsuario(){ return usuario; }
+    public void setUsuario(String u){ this.usuario = u; }
+    public String getPassword(){ return password; }
+    public void setPassword(String p){ this.password = p; }
+    public boolean isMostrarError(){ return mostrarError; }
 }
