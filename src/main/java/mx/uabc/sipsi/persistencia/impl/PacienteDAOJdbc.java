@@ -100,4 +100,79 @@ public class PacienteDAOJdbc implements PacienteDAO {
             }
         }
     }
+
+    @Override
+    public Paciente obtenerPorId(Long id) throws Exception {
+        String sql = "SELECT id, nombre_completo, edad, genero, correo, activo FROM paciente WHERE id = ?";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Paciente p = new Paciente();
+                    p.setId(rs.getLong("id"));
+                    p.setNombreCompleto(rs.getString("nombre_completo"));
+                    p.setEdad(rs.getInt("edad"));
+                    String gen = rs.getString("genero");
+                    p.setGenero((gen != null && !gen.isEmpty()) ? gen.charAt(0) : null);
+                    p.setCorreo(rs.getString("correo"));
+                    try {
+                        p.setActivo(rs.getBoolean("activo"));
+                    } catch (Throwable ignore) {}
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean existePorNombreYEdadExceptoId(String nombreCompleto, int edad, long id) throws Exception {
+        String sql = "SELECT 1 FROM paciente WHERE nombre_completo = ? AND edad = ? AND id <> ? LIMIT 1";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, nombreCompleto);
+            ps.setInt(2, edad);
+            ps.setLong(3, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    @Override
+    public boolean existeCorreoExceptoId(String correo, long id) throws Exception {
+        if (correo == null || correo.isBlank()) return false;
+        String sql = "SELECT 1 FROM paciente WHERE correo = ? AND id <> ? LIMIT 1";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+            ps.setString(1, correo);
+            ps.setLong(2, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    @Override
+    public boolean actualizar(Paciente p) throws Exception {
+        String sql = "UPDATE paciente SET nombre_completo = ?, edad = ?, genero = ?, correo = ? WHERE id = ?";
+        try (Connection cn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement ps = cn.prepareStatement(sql)) {
+
+            ps.setString(1, p.getNombreCompleto());
+            ps.setInt(2, p.getEdad());
+            ps.setString(3, (p.getGenero() == null) ? null : String.valueOf(p.getGenero()));
+
+            if (p.getCorreo() == null || p.getCorreo().isBlank()) {
+                ps.setNull(4, Types.VARCHAR);
+            } else {
+                ps.setString(4, p.getCorreo());
+            }
+
+            ps.setLong(5, p.getId());
+
+            return ps.executeUpdate() == 1;
+        }
+    }
 }

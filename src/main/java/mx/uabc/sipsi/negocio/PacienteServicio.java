@@ -64,6 +64,58 @@ public class PacienteServicio {
         }
     }
 
+    public Resultado editar(Long id, String nombreCompleto, Integer edad, String generoStr, String correo) {
+        try {
+            if (id == null) {
+                return Resultado.fail("Paciente no encontrado");
+            }
+            if (nombreCompleto == null || nombreCompleto.trim().isEmpty()
+                    || edad == null || generoStr == null || generoStr.isBlank()) {
+                return Resultado.fail("Campo Obligatorio");
+            }
+
+            nombreCompleto = nombreCompleto.trim();
+            if (correo != null) correo = correo.trim();
+            Character genero = generoStr.trim().charAt(0);
+
+            if (edad < 0 || edad > 120) {
+                return Resultado.fail("Edad fuera de rango: Debe estar entre 0 y 120");
+            }
+
+            if (correo != null && !correo.isBlank() && !EMAIL_REGEX.matcher(correo).matches()) {
+                return Resultado.fail("Formato de correo inválido");
+            }
+
+            if (pacienteDAO.existePorNombreYEdadExceptoId(nombreCompleto, edad, id)) {
+                return Resultado.fail("Ya existe ese paciente registrado");
+            }
+            if (correo != null && !correo.isBlank() && pacienteDAO.existeCorreoExceptoId(correo, id)) {
+                return Resultado.fail("El correo ingresado ya fue registrado con otro paciente");
+            }
+
+            Paciente p = pacienteDAO.obtenerPorId(id);
+            if (p == null) {
+                return Resultado.fail("Paciente no encontrado");
+            }
+
+            p.setNombreCompleto(nombreCompleto);
+            p.setEdad(edad);
+            p.setGenero(genero);
+            p.setCorreo((correo == null || correo.isBlank()) ? null : correo);
+
+            boolean ok = pacienteDAO.actualizar(p);
+            if (!ok) {
+                return Resultado.fail("No fue posible guardar los cambios");
+            }
+
+            return Resultado.ok();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Resultado.fail("Error al editar paciente");
+        }
+    }
+
     public static class Resultado {
         private final boolean exito;
         private final String mensaje;

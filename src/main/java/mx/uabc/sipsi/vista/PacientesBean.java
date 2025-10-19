@@ -32,6 +32,9 @@ public class PacientesBean implements Serializable {
     private boolean mostrarAlerta;
     private String mensajeAlerta;
 
+    private boolean mostrarEditarPaciente;
+    private Long editPacienteId;
+
     @Inject
     private PacienteServicio pacienteServicio;
 
@@ -74,6 +77,7 @@ public class PacientesBean implements Serializable {
         errNombre = false;
         errEdad = false;
         errGenero = false;
+        editPacienteId = null;
     }
 
     public void onNombreChange() {
@@ -105,6 +109,43 @@ public class PacientesBean implements Serializable {
         limpiarForm();
         refrescar();
         mensajeAlerta = "Paciente registrado correctamente";
+        mostrarAlerta = true;
+    }
+
+    public void abrirEditarPaciente(Paciente p) {
+        this.editPacienteId = p.getId();
+        this.nombreCompleto = p.getNombreCompleto();
+        this.edad = p.getEdad();
+        this.genero = (p.getGenero() == null) ? null : p.getGenero().toString();
+        this.correo = p.getCorreo();
+        this.errNombre = false;
+        this.errEdad = false;
+        this.errGenero = false;
+        this.mostrarEditarPaciente = true;
+    }
+
+    public void cancelarEditarPaciente() {
+        this.mostrarEditarPaciente = false;
+        limpiarForm();
+    }
+
+    public void guardarCambiosPaciente() {
+        errNombre = (nombreCompleto == null || nombreCompleto.trim().isEmpty());
+        errEdad = (edad == null);
+        errGenero = (genero == null || genero.isBlank());
+        if (errNombre || errEdad || errGenero) return;
+
+        var res = pacienteServicio.editar(editPacienteId, nombreCompleto, edad, genero, correo);
+        if (!res.isExito()) {
+            mensajeAlerta = res.getMensaje();
+            mostrarAlerta = true;
+            return;
+        }
+
+        this.mostrarEditarPaciente = false;
+        limpiarForm();
+        refrescar();
+        mensajeAlerta = "Paciente modificado correctamente";
         mostrarAlerta = true;
     }
 
@@ -186,5 +227,9 @@ public class PacientesBean implements Serializable {
 
     public String getMensajeAlerta() {
         return mensajeAlerta;
+    }
+
+    public boolean isMostrarEditarPaciente() {
+        return mostrarEditarPaciente;
     }
 }
