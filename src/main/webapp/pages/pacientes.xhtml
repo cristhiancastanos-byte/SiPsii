@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+      lang="es">
+
+<h:head>
+    <title>SiPsi – Pacientes</title>
+    <meta charset="UTF-8" />
+
+    <h:outputStylesheet>
+        :root {
+        --morado: #6F00FC;
+        --degrad1: #EDE9FD;
+        --degrad2: #CBA8E8;
+        --texto: #1a1a1a;
+        }
+
+        * {
+        box-sizing: border-box;
+        }
+
+        body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        color: var(--texto);
+        }
+
+        .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 18px;
+        background: linear-gradient(90deg, var(--degrad1), var(--degrad2));
+        border-bottom: 1px solid #ddd;
+        }
+
+        .topbar__left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 220px;
+        }
+
+        .topbar__center {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        }
+
+        .topbar__right {
+        min-width: 220px;
+        display: flex;
+        justify-content: flex-end;
+        }
+
+        .logo {
+        height: 42px;
+        width: auto;
+        border-radius: 14px;
+        background: #fff;
+        padding: 6px 10px;
+        }
+
+        .btn {
+        border: 0;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        }
+
+        .btn--primary {
+        background: var(--morado);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(111, 0, 252, .35);
+        }
+
+        .btn--logout {
+        background: #b51d1d;
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(181, 29, 29, .35);
+        }
+
+        .nav-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        }
+
+        .panel {
+        max-width: 1100px;
+        margin: 26px auto;
+        padding: 26px;
+        background: #F1ECFE;
+        border-radius: 18px;
+        box-shadow: 0 12px 26px rgba(0, 0, 0, .08);
+        }
+
+        .head-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        }
+
+        .head-row .title {
+        font-size: 28px;
+        font-weight: 800;
+        flex: 1;
+        }
+
+        .search {
+        display: flex;
+        gap: .5rem;
+        align-items: center;
+        background: #fff;
+        border-radius: 999px;
+        padding: .55rem 1rem;
+        box-shadow: 0 12px 28px rgba(111, 0, 252, .20);
+        min-width: 320px;
+        max-width: 420px;
+        }
+
+        .search input {
+        border: none;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+        }
+
+        .search .btn-find {
+        background: var(--morado);
+        color: #fff;
+        border: none;
+        border-radius: .9rem;
+        padding: .55rem 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        }
+
+        .empty-wrap {
+        display: flex;
+        justify-content: center;
+        margin-top: 18px;
+        }
+
+        .empty-card {
+        width: min(760px, 100%);
+        background: #fff;
+        color: #444;
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, .10);
+        }
+
+        .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 18px;
+        margin-top: 18px;
+        }
+
+        .card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 12px 22px rgba(0, 0, 0, .12);
+        padding: 18px;
+        }
+
+        .card .accent {
+        height: 8px;
+        background: linear-gradient(90deg, var(--degrad1), var(--degrad2));
+        border-radius: 8px;
+        margin-bottom: 10px;
+        width: 42%;
+        }
+
+        .card h3 {
+        margin: 6px 0 8px;
+        font-size: 18px;
+        }
+
+        .meta {
+        color: #333;
+        font-size: 14px;
+        line-height: 1.45;
+        }
+
+        .actions {
+        display: flex;
+        gap: .5rem;
+        flex-wrap: wrap;
+        margin-top: 12px;
+        }
+
+        .btn-outline {
+        padding: .45rem .8rem;
+        border-radius: .6rem;
+        border: 1px solid rgba(111, 0, 252, .35);
+        background: #fff;
+        color: var(--morado);
+        cursor: pointer;
+        }
+
+        .backdrop-detail {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 900;
+        }
+
+        .modal-detail {
+        background: #fff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 560px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
+        }
+
+        .modal-detail header {
+        padding: 14px 16px;
+        border-bottom: 1px solid #eee;
+        font-size: 20px;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+
+        .modal-detail .content {
+        padding: 16px 18px;
+        font-size: 15px;
+        color: #222;
+        }
+
+        .modal-detail .footer {
+        padding: 14px 16px;
+        display: flex;
+        justify-content: flex-end;
+        gap: .5rem;
+        }
+
+        .link-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        color: #444;
+        }
+
+        .btn-primary {
+        background: var(--morado);
+        color: #fff;
+        border: none;
+        border-radius: .6rem;
+        padding: .45rem .8rem;
+        cursor: pointer;
+        }
+
+        .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, .35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 1000;
+        }
+
+        .modal {
+        background: #fff;
+        border-radius: 14px;
+        padding: 20px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+        }
+
+        .modal h3 {
+        margin: 0 0 12px;
+        font-size: 22px;
+        }
+
+        .modal .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        }
+
+        @media (max-width: 820px) {
+        .head-row {
+        flex-direction: column;
+        align-items: flex-start;
+        }
+
+        .search {
+        width: 100%;
+        max-width: none;
+        }
+
+        .empty-wrap {
+        justify-content: flex-start;
+        }
+        }
+    </h:outputStylesheet>
+
+    <h:outputScript target="body">
+        function openLogoutModal() {
+        document.getElementById('logoutBackdrop').style.display = 'flex';
+        }
+
+        function closeLogoutModal() {
+        document.getElementById('logoutBackdrop').style.display = 'none';
+        }
+    </h:outputScript>
+</h:head>
+
+<h:body>
+    <nav class="topbar">
+        <div class="topbar__left">
+            <h:graphicImage library="images" name="logo-sipsi.png" alt="SiPsi" styleClass="logo" />
+        </div>
+        <div class="topbar__center">
+            <div class="nav-actions">
+                <h:link outcome="/pages/pacientes.xhtml?faces-redirect=true" styleClass="btn btn--primary">Pacientes</h:link>
+                <button type="button" class="btn btn--logout" onclick="openLogoutModal()">Cerrar sesión</button>
+            </div>
+        </div>
+        <div class="topbar__right"></div>
+    </nav>
+
+    <div class="panel">
+        <h:form id="frmPac">
+            <div class="head-row">
+                <div class="title">Pacientes</div>
+                <div class="search" role="search">
+                    <h:inputText value="#{pacientesBean.termino}" p:placeholder="Buscar por nombre" />
+                    <h:commandButton value="Buscar" action="#{pacientesBean.buscar}" styleClass="btn-find" />
+                </div>
+            </div>
+
+            <ui:fragment rendered="#{empty pacientesBean.pacientes}">
+                <div class="empty-wrap">
+                    <div class="empty-card">No hay ningún paciente registrado.</div>
+                </div>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{not empty pacientesBean.pacientes}">
+                <div class="grid">
+                    <ui:repeat value="#{pacientesBean.pacientes}" var="p">
+                        <div class="card">
+                            <div class="accent"></div>
+                            <h3>#{p.nombreCompleto}</h3>
+                            <div class="meta">
+                                Edad : #{p.edad} Años<br />
+                                Género : #{p.genero}<br />
+                                Expediente : #{p.expedienteConCeros}
+                            </div>
+                            <div class="actions">
+                                <h:commandButton value="Ver detalles" action="#{pacientesBean.abrirDetalles(p)}" styleClass="btn-outline" />
+                                <span style="visibility:hidden" aria-hidden="true">
+                                    <button class="btn-outline">Eliminar</button>
+                                    <button class="btn-outline">Editar</button>
+                                    <button class="btn-outline">Ver citas</button>
+                                </span>
+                            </div>
+                        </div>
+                    </ui:repeat>
+                </div>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{pacientesBean.mostrarDialogo}">
+                <div class="backdrop-detail">
+                    <div class="modal-detail" role="dialog" aria-modal="true">
+                        <header>
+                            <span>Ver detalles</span>
+                            <h:commandButton value="×" action="#{pacientesBean.cerrarDetalles}" styleClass="link-close" />
+                        </header>
+                        <div class="content">
+                            <strong>#{pacientesBean.seleccionado.nombreCompleto}</strong><br /><br />
+                            Edad : #{pacientesBean.seleccionado.edad} Años<br />
+                            Género : #{pacientesBean.seleccionado.genero}<br />
+                            Expediente : #{pacientesBean.seleccionado.expedienteConCeros}<br />
+                            <ui:fragment rendered="#{not empty pacientesBean.seleccionado.correo}">
+                                Correo : #{pacientesBean.seleccionado.correo}<br />
+                            </ui:fragment>
+                        </div>
+                        <div class="footer">
+                            <button class="btn-primary" disabled="disabled" title="Próximamente">Abrir expediente</button>
+                        </div>
+                    </div>
+                </div>
+            </ui:fragment>
+        </h:form>
+    </div>
+
+    <div id="logoutBackdrop" class="modal-backdrop">
+        <div class="modal">
+            <h3>¿Seguro que quieres cerrar sesión?</h3>
+            <h:form>
+                <div class="actions">
+                    <button type="button" class="btn" onclick="closeLogoutModal()">Cancelar</button>
+                    <h:commandButton value="Cerrar sesión" styleClass="btn btn--logout" action="#{logoutBean.cerrarSesion}" />
+                </div>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>
