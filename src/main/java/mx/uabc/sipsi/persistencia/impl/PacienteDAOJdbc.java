@@ -76,7 +76,7 @@ public class PacienteDAOJdbc implements PacienteDAO {
                 return rs.next();
             }
         }
-    }
+    }//
 
     @Override
     public long insertar(Paciente p) throws Exception {
