@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://xmlns.jcp.org/jsf/passthrough"
+      lang="es">
+
+<h:head>
+    <title>SiPsi - Expediente</title>
+    <meta charset="UTF-8" />
+
+    <h:outputStylesheet>
+        :root { --morado:#6F00FC; --degrad1:#EDE9FD; --degrad2:#CBA8E8; --texto:#1a1a1a; }
+
+        * { box-sizing: border-box; }
+        body { margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial; color:var(--texto); }
+
+        .topbar { display:flex; align-items:center; justify-content:space-between; padding:10px 18px;
+        background:linear-gradient(90deg, var(--degrad1), var(--degrad2)); border-bottom:1px solid #ddd; }
+        .topbar__left { display:flex; align-items:center; gap:12px; min-width:220px; }
+        .topbar__center { flex:1; display:flex; justify-content:center; }
+        .topbar__right { min-width:220px; display:flex; justify-content:flex-end; }
+        .logo { height:42px; width:auto; border-radius:14px; background:#fff; padding:6px 10px; }
+        .nav-actions { display:flex; gap:10px; align-items:center; }
+        .btn { border:0; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer; }
+        .btn--primary { background:var(--morado); color:#fff; box-shadow:0 4px 14px rgba(111,0,252,.35); }
+        .btn--logout { background:#b51d1d; color:#fff; box-shadow:0 4px 14px rgba(181,29,29,.35); }
+
+        .wrap{max-width:1100px;margin:26px auto;padding:26px;background:#F1ECFE;border-radius:18px;
+        box-shadow:0 12px 26px rgba(0,0,0,.08);}
+        h1{margin:6px 0 14px 0;font-size:28px;}
+
+        .crumb { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+        .btn-back{
+        display:inline-flex; align-items:center; gap:8px;
+        padding:8px 14px; border-radius:999px; font-weight:700;
+        background: var(--morado); color:#fff; border:0;
+        box-shadow:0 4px 14px rgba(111,0,252,.35);
+        }
+        .btn-back .icon{ font-size:16px; line-height:1; }
+        .crumb-text{ color:#666; }
+
+        .panel{background:#fff;border-radius:16px;box-shadow:0 12px 22px rgba(0,0,0,.12);padding:18px;margin:14px 0;}
+        .panel header{font-weight:800;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+
+        .btn-outline{
+        padding:.45rem .8rem; border-radius:.6rem; border:1px solid rgba(111,0,252,.35);
+        background:#fff; color:var(--morado); cursor:pointer;
+        }
+
+        .grid-notas .row, .grid-arch .row{
+        display:grid; gap:10px; align-items:center; padding:6px 0; border-bottom:1px solid #eee;
+        }
+        .grid-notas .row{ grid-template-columns:180px 1fr auto; }
+        .grid-arch .row{  grid-template-columns:180px 1fr; }
+
+        .v-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.45); display:none;
+        align-items:center; justify-content:center; padding:16px; z-index:1040; }
+        .v-card{ width:min(760px,92vw); background:#fff; border-radius:16px; box-shadow:0 20px 40px rgba(0,0,0,.35); overflow:hidden; }
+        .v-header{ padding:18px 22px; font-size:22px; font-weight:700; text-align:center; border-bottom:1px solid #eee; position:relative; }
+        .v-close{ position:absolute; right:14px; top:10px; border:0; background:none; font-size:24px; cursor:pointer; color:#444; }
+        .v-body{ padding:18px 22px; font-size:16px; color:#111; line-height:1.5; white-space:pre-wrap; }
+        .v-title{ font-weight:800; margin-bottom:8px; }
+
+        .modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:none;
+        align-items:center; justify-content:center; padding:16px; z-index:1000; }
+        .modal{ background:#fff; border-radius:14px; padding:20px; width:100%; max-width:520px;
+        box-shadow:0 10px 30px rgba(0,0,0,.25); }
+        .modal h3{ margin:0 0 12px; font-size:22px; }
+        .modal .actions{ margin-top:20px; display:flex; gap:12px; justify-content:flex-end; }
+
+        a.btn-back, a.btn-back:link, a.btn-back:visited, a.btn-back:hover, a.btn-back:focus, a.btn-back:active{
+        text-decoration:none; display:inline-flex;
+        }
+    </h:outputStylesheet>
+
+    <h:outputScript target="body">
+        function openViewNote(hiddenId){
+        const src = document.getElementById(hiddenId);
+        if(!src) return;
+        const title = src.querySelector('.t').textContent;
+        const content = src.querySelector('.c').textContent;
+
+        document.getElementById('vTitle').textContent = 'Ver: ' + title;
+        document.getElementById('vBodyTitle').textContent = title;
+        document.getElementById('vBodyContent').textContent = content;
+
+        document.getElementById('viewOverlay').style.display='flex';
+        }
+        function closeViewNote(){
+        document.getElementById('viewOverlay').style.display='none';
+        }
+        function openLogoutModal(){ document.getElementById('logoutBackdrop').style.display='flex'; }
+        function closeLogoutModal(){ document.getElementById('logoutBackdrop').style.display='none'; }
+    </h:outputScript>
+</h:head>
+
+<h:body>
+    <nav class="topbar">
+        <div class="topbar__left">
+            <h:graphicImage library="images" name="logo-sipsi.png" alt="SiPsi" styleClass="logo" />
+        </div>
+        <div class="topbar__center">
+            <div class="nav-actions">
+                <h:link outcome="/pages/pacientes.xhtml?faces-redirect=true" styleClass="btn btn--primary">Pacientes</h:link>
+                <button type="button" class="btn btn--logout" onclick="openLogoutModal()">Cerrar sesión</button>
+            </div>
+        </div>
+        <div class="topbar__right"></div>
+    </nav>
+
+    <div class="wrap">
+        <div class="crumb">
+            <h:link outcome="/pages/pacientes.xhtml?faces-redirect=true" styleClass="btn-back">
+                <span class="icon">◀</span>
+                <span>Volver</span>
+            </h:link>
+            <span class="crumb-text">Pacientes > Detalles > Expediente</span>
+        </div>
+
+        <h1>Expediente - #{expedienteBean.paciente.nombreCompleto}</h1>
+
+        <div class="panel">
+            <header><span>🗒️ Notas</span></header>
+
+            <ui:fragment rendered="#{empty expedienteBean.notas}">
+                <div style="color:#777">Sin notas</div>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{not empty expedienteBean.notas}">
+                <div class="grid-notas">
+                    <ui:repeat value="#{expedienteBean.notas}" var="n">
+                        <div id="nv-#{n.id}" style="display:none">
+                            <div class="t"><h:outputText value="#{n.titulo}" /></div>
+                            <div class="c"><h:outputText value="#{n.contenido}" /></div>
+                        </div>
+
+                        <div class="row">
+                            <div>#{n.fecha.dayOfMonth} #{n.fecha.month} #{n.fecha.year}</div>
+                            <div>#{n.titulo}</div>
+                            <button type="button" class="btn-outline" onclick="openViewNote('nv-#{n.id}')">Ver</button>
+                        </div>
+                    </ui:repeat>
+                </div>
+            </ui:fragment>
+        </div>
+
+        <div class="panel">
+            <header><span>📎 Archivos</span></header>
+
+            <ui:fragment rendered="#{empty expedienteBean.archivos}">
+                <div style="color:#777">Sin archivos</div>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{not empty expedienteBean.archivos}">
+                <div class="grid-arch">
+                    <ui:repeat value="#{expedienteBean.archivos}" var="a">
+                        <div class="row">
+                            <div>#{a.fecha.dayOfMonth} #{a.fecha.month} #{a.fecha.year}</div>
+                            <div>#{a.nombre}</div>
+                        </div>
+                    </ui:repeat>
+                </div>
+            </ui:fragment>
+        </div>
+    </div>
+
+    <div id="viewOverlay" class="v-overlay" role="dialog" aria-modal="true">
+        <div class="v-card">
+            <div class="v-header">
+                <span id="vTitle">Ver: Nota</span>
+                <button type="button" class="v-close" onclick="closeViewNote()">×</button>
+            </div>
+            <div class="v-body">
+                <div id="vBodyTitle" class="v-title">Título</div>
+                <div id="vBodyContent">Contenido...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="logoutBackdrop" class="modal-backdrop">
+        <div class="modal">
+            <h3>¿Seguro que quieres cerrar sesión?</h3>
+            <h:form>
+                <div class="actions">
+                    <button type="button" class="btn" onclick="closeLogoutModal()">Cancelar</button>
+                    <h:commandButton value="Cerrar sesión" styleClass="btn btn--logout"
+                                     action="#{logoutBean.cerrarSesion}" />
+                </div>
+            </h:form>
+        </div>
+    </div>
+</h:body>
+</html>

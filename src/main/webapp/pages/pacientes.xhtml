@@ -120,6 +120,16 @@
 
         .btn-primary { background: var(--morado); color: #fff; border: none; border-radius: .6rem; padding: .45rem .8rem; cursor: pointer; }
 
+        .modal-detail .footer a.btn-primary,
+        .modal-detail .footer a.btn-primary:link,
+        .modal-detail .footer a.btn-primary:visited,
+        .modal-detail .footer a.btn-primary:hover,
+        .modal-detail .footer a.btn-primary:focus,
+        .modal-detail .footer a.btn-primary:active {
+        text-decoration: none;
+        display: inline-block;
+        }
+
         .modal-backdrop {
         position: fixed; inset: 0; background: rgba(0, 0, 0, .35); display: none;
         align-items: center; justify-content: center; padding: 16px; z-index: 1000;
@@ -224,7 +234,6 @@
                             </div>
                             <div class="actions">
                                 <h:commandButton value="Ver detalles" action="#{pacientesBean.abrirDetalles(p)}" styleClass="btn-outline" />
-                                <!-- NUEVO: botón Editar (no se eliminó nada, solo se agregó) -->
                                 <h:commandButton value="Editar" action="#{pacientesBean.abrirEditarPaciente(p)}" styleClass="btn-outline" />
                             </div>
                         </div>
@@ -249,7 +258,10 @@
                             </ui:fragment>
                         </div>
                         <div class="footer">
-                            <button class="btn-primary" disabled="disabled" title="Próximamente">Abrir expediente</button>
+                            <h:link outcome="/pages/expediente.xhtml?faces-redirect=true" styleClass="btn-primary">
+                                Abrir expediente
+                                <f:param name="pacienteId" value="#{pacientesBean.seleccionado.id}" />
+                            </h:link>
                         </div>
                     </div>
                 </div>
@@ -393,7 +405,6 @@
                     <div class="np-alert-actions">
                         <h:form>
                             <h:commandButton value="Aceptar" styleClass="btn btn-white" action="#{pacientesBean.cerrarPop}">
-                                <!-- NUEVO: agregué :frmEditarPaciente, dejé intacto lo tuyo -->
                                 <f:ajax render=":popAlert :frmNuevoPaciente :frmEditarPaciente" />
                             </h:commandButton>
                         </h:form>
