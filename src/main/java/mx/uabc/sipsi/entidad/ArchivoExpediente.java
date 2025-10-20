@@ -8,7 +8,7 @@ public class ArchivoExpediente {
     private Long idPaciente;
     private LocalDateTime fecha;
     private String nombre;
-    private File archivo;
+    private String ruta;
 
     // Getters y setters
     public Long getId() { return id; }
@@ -19,6 +19,6 @@ public class ArchivoExpediente {
     public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-    public  File getArchivo() { return archivo; }
-    public void setArchivo(File archivo) { this.archivo = archivo; }
+    public String getRuta() { return ruta; }
+    public void setRuta(String ruta) { this.ruta = ruta; }
 }
